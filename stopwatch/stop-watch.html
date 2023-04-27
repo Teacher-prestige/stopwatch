@@ -1,0 +1,114 @@
+<!DOCTYPE>
+<html>
+    <head>
+       <title>Секундомір</title>
+       <style>
+
+       </style>
+    </head>
+    <body>
+        <h2>Секундомір</h2>
+        <p id="watch">
+            <span id="hours">00</span>
+            :
+            <span id="minutes">00</span>
+            :
+            <span id="seconds">00</span>
+        </p>
+        <p>
+            <button id="start">Старт</button>
+            <button id="reset" style="display: none;">Скинути</button>
+            <button id="stop" style="display: none;">Стоп</button>
+            <button id="catch" style="display: none;">Захопити</button>
+        </p>
+        <ol id="points"></ol>
+        <script>
+            let time = 0;
+            let timerId;
+
+            const startBut = document.getElementById('start');
+            const resetBut = document.getElementById('reset');
+            const stopBut = document.getElementById('stop');
+            const catchBut = document.getElementById('catch');
+            const points = document.getElementById('points');
+
+            startBut.onclick = startTimer;
+            stopBut.onclick = stopTimer;
+            resetBut.onclick = resetTimer;
+
+            catchBut.addEventListener('click', () => {
+                const li = document.createElement('li');
+                const content = getHours(time) + ' : ' + getMinutes(time)
+                    + ' : ' + getSeconds(time);
+                li.innerText = content;
+                points.appendChild(li);
+            });
+
+            function startTimer()
+            {
+                startBut.style.display = 'none';
+                resetBut.style.display = 'inline-block';
+                stopBut.style.display = 'inline-block';
+                catchBut.style.display = 'inline-block';
+                
+                timerId = setInterval(() => {
+                    time++;
+                    render(time);
+                }, 1000);
+            }
+
+            function stopTimer()
+            {
+                startBut.style.display = 'inline-block';
+                resetBut.style.display = 'inline-block';
+                stopBut.style.display = 'none';
+                catchBut.style.display = 'none';
+                clearInterval(timerId);
+                timerId = 0;
+            }
+
+            function resetTimer()
+            {
+                startBut.style.display = 'inline-block';
+                resetBut.style.display = 'none';
+                stopBut.style.display = 'none';
+                catchBut.style.display = 'none';
+
+                let childs = points.childNodes.length;
+                for(let i = childs - 1; i >= 0; i--){
+                    points.childNodes[i].remove();
+                }
+
+                clearInterval(timerId);
+                timerId = 0;
+                time = 0;
+                render(time);
+            }
+
+            function render(time){
+                document.getElementById('hours').innerText = getHours(time);
+                document.getElementById('minutes').innerText = getMinutes(time);
+                document.getElementById('seconds').innerText = getSeconds(time);
+            }
+
+            function getSeconds(time){
+                let seconds = time % 60;
+                return formatTime(seconds);
+            }
+
+            function getMinutes(time){
+                let minutes = ((time - (time % 60)) % 3600) / 60;
+                return formatTime(minutes);
+            }
+
+            function getHours(time){
+                let hours = (time - (time % 3600)) / 3600;
+                return formatTime(hours);
+            }
+
+            function formatTime(input){
+                return input > 9 ? input.toString() : '0' + input.toString();
+            }
+        </script>
+    </body>
+</html>
